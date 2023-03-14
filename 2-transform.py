@@ -1,3 +1,4 @@
+import pandas as pd
 import json
 import argparse
 
@@ -15,7 +16,7 @@ def extract_data(record):
 
 
 # --- ARG parser
-parser = argparse.ArgumentParser(description='Extract script')
+parser = argparse.ArgumentParser(description='Transform script')
 
 parser.add_argument('--input_folder', type=str)
 parser.add_argument('--output_folder', type=str)
@@ -34,6 +35,5 @@ us_data = []
 if data:
     us_data = [extract_data(record) for record in data if record['location']['country'].lower() == "united states"]
 
-# SAVE DATA INTO STAGGING
-with open(f'{args.output_folder}/output.json', 'w') as output_file:
-    json.dump(us_data, output_file)
+# Save data as parquet
+pd.DataFrame.from_records(us_data).to_parquet(f'{args.output_folder}/output.parquet', engine='fastparquet')
